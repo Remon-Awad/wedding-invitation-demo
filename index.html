@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>The Wedding Invitation</title>
+
+  <!-- Link preview (WhatsApp, Facebook, iMessage): replace YOUR-DOMAIN with the real site address -->
+  <meta name="description" content="You are invited to the wedding of Alexander &amp; Vivienne, 18 December 2026.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Alexander &amp; Vivienne — Wedding Invitation">
+  <meta property="og:description" content="You are invited to our wedding on 18 December 2026. We can't wait to celebrate with you.">
+  <meta property="og:image" content="https://YOUR-DOMAIN/hero.jpg">
+  <meta property="og:url" content="https://YOUR-DOMAIN/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Envelope (the ribbon is drawn and animated in script.js) -->
+  <main class="envelope" id="envelope" aria-label="Wedding invitation envelope">
+    <div class="paper"></div>
+
+    <div class="flap" id="flap">
+      <div class="flap__edge"></div>
+      <div class="flap__shape">
+        <p class="flap__eyebrow">The wedding of</p>
+        <h1 class="flap__names"><span data-groom></span><i>&amp;</i><span data-bride></span></h1>
+      </div>
+    </div>
+
+    <canvas class="ribbon" id="ribbon" aria-hidden="true"></canvas>
+
+    <button class="open" id="open" type="button" aria-label="Untie the ribbon to open the invitation">Pull the ribbon</button>
+  </main>
+
+  <!-- Invitation page, revealed once the envelope is open -->
+  <div class="invite" id="invite" tabindex="-1" inert aria-hidden="true">
+
+    <canvas class="dust" id="dust" aria-hidden="true"></canvas>
+    <canvas class="fw" id="fw" aria-hidden="true"></canvas>
+
+    <!-- Scroll progress thread, ends in a bow that starts the fireworks -->
+    <div class="thread" id="thread">
+      <i class="thread__fill" aria-hidden="true"></i><i class="thread__tip" aria-hidden="true"></i>
+      <button class="thread__bowbtn" id="bowBtn" type="button" aria-label="Celebrate">
+        <svg class="thread__bow" viewBox="0 0 40 32" aria-hidden="true">
+          <defs>
+            <linearGradient id="gb" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#f6e9be"/>
+              <stop offset=".55" stop-color="#cfae66"/>
+              <stop offset="1" stop-color="#8a6a2c"/>
+            </linearGradient>
+          </defs>
+          <path d="M20 12C13 1 2 3 3 11c1 7 12 6 17 1z" fill="url(#gb)"/>
+          <path d="M20 12C27 1 38 3 37 11c-1 7-12 6-17 1z" fill="url(#gb)"/>
+          <path d="M19 14l-6 16 6-3 1 4V14zM21 14l6 16-6-3-1 4V14z" fill="url(#gb)"/>
+          <rect x="17.5" y="9.5" width="5" height="7" rx="2" fill="#f1dfae"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="invite__inner">
+
+      <!-- Hero -->
+      <header class="hero">
+        <p class="eyebrow rv">The wedding of</p>
+        <h2 class="names rv" style="--d:.12s"><span data-groom></span><i>&amp;</i><span data-bride></span></h2>
+        <p class="lead rv" style="--d:1.5s">We're getting married</p>
+        <figure class="photo rv" id="hero" style="--d:.5s">
+          <div class="photo__in">
+            <img id="heroImg" alt="">
+            <div class="photo__ph" aria-hidden="true"><span data-initials></span></div>
+          </div>
+        </figure>
+      </header>
+
+      <div class="rib rv" aria-hidden="true"><i></i></div>
+
+      <!-- Date / time / place -->
+      <section class="details" aria-label="Event details">
+        <div class="detail rv">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+          <h3>Date</h3>
+          <p class="scratch" id="scratch">
+            <span data-date></span>
+            <canvas id="scratchCv" tabindex="0" role="button" aria-label="Scratch to reveal the date"></canvas>
+          </p>
+        </div>
+        <div class="detail rv" style="--d:.14s">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg>
+          <h3>Time</h3>
+          <p data-time></p>
+        </div>
+        <div class="detail rv" style="--d:.28s">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+          <h3>Place</h3>
+          <p data-place></p>
+        </div>
+      </section>
+
+      <!-- Schedule (filled from INVITE.schedule in script.js) -->
+      <section class="sched" aria-label="The evening">
+        <h3 class="sched__title rv">The evening</h3>
+        <ol class="sched__list" id="schedList"></ol>
+      </section>
+
+      <div class="rib rv" aria-hidden="true"><i></i></div>
+
+      <!-- Gallery -->
+      <section class="gallery" id="gallery" aria-label="Photo gallery">
+        <h3 class="gallery__title rv">Our story in pictures</h3>
+        <p class="gallery__sub rv" style="--d:.1s">Swipe through our favourite moments &middot; tap a photo to enlarge it</p>
+        <div class="gallery__stage rv" style="--d:.2s">
+          <button class="gnav gnav--prev" id="gPrev" type="button" aria-label="Previous photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <div class="gallery__track" id="gTrack" role="group" aria-roledescription="carousel" aria-label="Wedding photos"></div>
+          <button class="gnav gnav--next" id="gNext" type="button" aria-label="Next photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        </div>
+        <p class="gallery__count" id="gCount" aria-live="polite">1 / 10</p>
+        <div class="gallery__bar" aria-hidden="true"><i id="gBar"></i></div>
+      </section>
+
+      <div class="rib rv" aria-hidden="true"><i></i></div>
+
+      <!-- Countdown -->
+      <section class="count rv" aria-label="Countdown to the wedding">
+        <p class="count__title">Counting down to our day</p>
+        <div class="count__grid" role="timer">
+          <div><b data-cd="d">0</b><span>Days</span></div>
+          <div><b data-cd="h">00</b><span>Hours</span></div>
+          <div><b data-cd="m">00</b><span>Minutes</span></div>
+          <div><b data-cd="s">00</b><span>Seconds</span></div>
+        </div>
+        <div class="unrav" id="unrav" aria-hidden="true">
+          <i class="unrav__track"></i><i class="unrav__fill"></i>
+          <span class="unrav__end"><i></i><i></i><i></i><i></i></span>
+        </div>
+        <p class="unrav__cap">The ribbon grows shorter every day</p>
+        <p class="count__note" id="cdNote"></p>
+      </section>
+
+      <div class="actions">
+        <a class="btn rv" id="mapsBtn" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+          Get directions
+        </a>
+      </div>
+
+      <div class="rib rv" aria-hidden="true"><i></i></div>
+
+      <!-- RSVP -->
+      <section class="rsvp rv" id="rsvp" aria-labelledby="rsvpTitle">
+        <h3 class="rsvp__title" id="rsvpTitle">R.S.V.P.</h3>
+        <p class="rsvp__lead" id="rsvpLead">Will you be celebrating with us?</p>
+        <p class="rsvp__deadline" id="rsvpDeadline" hidden></p>
+
+        <form class="rsvp__form" id="rsvpForm" novalidate>
+          <div class="rsvp__field" data-field="name">
+            <label class="rsvp__label" for="rsvpName">Your name</label>
+            <input class="rsvp__in" id="rsvpName" name="name" type="text" autocomplete="name" placeholder="Full name" maxlength="80" required>
+            <p class="rsvp__err" aria-live="polite"></p>
+          </div>
+
+          <fieldset class="rsvp__field" data-field="attending">
+            <legend class="rsvp__label">Your reply</legend>
+            <div class="rsvp__choice">
+              <label class="rsvp__opt"><input type="radio" name="attending" value="yes"><span>Joyfully accept</span></label>
+              <label class="rsvp__opt"><input type="radio" name="attending" value="no"><span>Regretfully decline</span></label>
+            </div>
+            <p class="rsvp__err" aria-live="polite"></p>
+          </fieldset>
+
+          <div class="rsvp__field" id="rsvpGuests" hidden>
+            <span class="rsvp__label" id="rsvpGuestsLbl">Guests, including you</span>
+            <div class="rsvp__step" role="group" aria-labelledby="rsvpGuestsLbl">
+              <button type="button" id="gMinus" aria-label="One guest fewer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+              <output id="gNum" aria-live="polite">1</output>
+              <button type="button" id="gPlus" aria-label="One guest more"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg></button>
+            </div>
+          </div>
+
+          <div class="rsvp__field" id="rsvpWho" hidden>
+            <label class="rsvp__label" for="rsvpWith">Who is joining you?</label>
+            <input class="rsvp__in" id="rsvpWith" name="companions" type="text" placeholder="Names of your guests" maxlength="160">
+          </div>
+
+          <div class="rsvp__field">
+            <label class="rsvp__label" for="rsvpNote">A note for the couple (optional)</label>
+            <textarea class="rsvp__in" id="rsvpNote" name="note" rows="3" maxlength="400" placeholder="Your wishes, or anything we should know"></textarea>
+          </div>
+
+          <!-- Hidden anti-spam field -->
+          <input class="rsvp__trap" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <p class="rsvp__err rsvp__err--form" id="rsvpFormErr" aria-live="polite"></p>
+
+          <button class="btn rsvp__send" id="rsvpSend" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg> Send my reply
+          </button>
+        </form>
+
+        <div class="rsvp__thanks" id="rsvpThanks" hidden aria-live="polite">
+          <div class="rsvp__seal" id="rsvpSeal">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <defs>
+                <radialGradient id="gSeal" cx=".35" cy=".3" r=".9">
+                  <stop offset="0" stop-color="#f6e9be"/>
+                  <stop offset=".55" stop-color="#cfae66"/>
+                  <stop offset="1" stop-color="#8a6a2c"/>
+                </radialGradient>
+              </defs>
+              <circle cx="50" cy="50" r="46" fill="url(#gSeal)"/>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(80,52,10,.4)" stroke-width="1.2" stroke-dasharray="2 3"/>
+              <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(255,244,205,.5)" stroke-width="1"/>
+              <text id="sealTxt" x="50" y="61" text-anchor="middle" font-size="30" fill="#5a3d0f"></text>
+            </svg>
+          </div>
+          <h4 id="thanksTitle"></h4>
+          <p id="thanksText"></p>
+          <p class="rsvp__sum" id="thanksSum"></p>
+          <div class="rsvp__acts">
+            <button class="btn rsvp__act" id="rsvpAct" type="button" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Action
+            </button>
+            <button class="rsvp__edit" id="rsvpEdit" type="button">Change my reply</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="rib rv" aria-hidden="true"><i></i></div>
+
+      <!-- Footer -->
+      <footer class="foot rv">
+        <p>We can't wait to celebrate with you</p>
+        <svg class="sign" id="sign" viewBox="0 0 600 130" role="img">
+          <defs>
+            <linearGradient id="gs" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#f6e9be"/>
+              <stop offset=".5" stop-color="#d8bd7e"/>
+              <stop offset="1" stop-color="#b8964f"/>
+            </linearGradient>
+            <mask id="signMask" maskUnits="userSpaceOnUse" x="0" y="0" width="600" height="130">
+              <path class="pen" pathLength="1" d="M0 70C110 46 200 98 300 68S480 52 600 74"/>
+            </mask>
+          </defs>
+          <text x="300" y="92" text-anchor="middle" font-size="74" textLength="540" lengthAdjust="spacingAndGlyphs" fill="url(#gs)" mask="url(#signMask)"><tspan data-groom></tspan> &amp; <tspan data-bride></tspan></text>
+          <path class="flourish" pathLength="1" d="M90 114C220 104 380 122 510 108"/>
+        </svg>
+
+        <!-- Same effect as tapping the bow on the thread (handler at the end of script.js) -->
+        <button class="btn celebrate" id="celebrate" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>
+          Celebrate with us
+        </button>
+
+        <button class="again" id="again" type="button">Close the envelope</button>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- Music on/off (music is synthesized in script.js) -->
+  <button class="music" id="music" type="button" aria-pressed="false" aria-label="Turn the music off" title="Music on"><span class="music__bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
+
+  <!-- Full-screen photo viewer -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" aria-hidden="true" inert>
+    <button class="lb__close" id="lbClose" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <button class="lb__nav lb__nav--prev" id="lbPrev" type="button" aria-label="Previous photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="lb__stage">
+      <figure class="lb__fig" id="lbFig">
+        <div class="lb__frame"><img id="lbImg" alt=""><div class="lb__ph" id="lbPh" aria-hidden="true"></div></div>
+        <figcaption><span id="lbCap"></span><small id="lbCount"></small></figcaption>
+      </figure>
+    </div>
+    <button class="lb__nav lb__nav--next" id="lbNext" type="button" aria-label="Next photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
